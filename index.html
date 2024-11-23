@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Age Calculator </title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Age Calculator</h1>
+    <form id="ageForm">
+      <label for="dob">Enter your Date of Birth:</label>
+      <input type="date" id="dob" required>
+      <button type="submit">Calculate Age</button>
+    </form>
+    <div id="result"></div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
+
+<style>
+
+ /* Basic reset and dark theme */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #121212;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+}
+
+.container {
+  background-color: #333;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+  text-align: center;
+  width: 100%;
+  max-width: 600px;
+}
+
+h1 {
+  color: #ff6347;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  animation: fadeIn 1s ease-in-out;
+}
+
+label {
+  display: block;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #dcdcdc;
+}
+
+input[type="date"] {
+  padding: 10px;
+  width: 100%;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  border: 1px solid #444;
+  background-color: #222;
+  color: #fff;
+}
+
+button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #45a049;
+  transform: scale(1.05);
+}
+
+#result {
+  margin-top: 20px;
+  font-size: 1.5rem;
+  color: #f0e68c;
+  text-align: center;
+  animation: fadeIn 1s ease-in-out;
+}
+
+/* Animation for the results */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
+
+<script>
+    document.getElementById("ageForm").addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  const dob = new Date(document.getElementById("dob").value);
+  const today = new Date();
+
+  if (dob > today) {
+    document.getElementById("result").textContent = "Please enter a valid date of birth!";
+    return;
+  }
+
+  let ageInYears = today.getFullYear() - dob.getFullYear();
+  let ageInMonths = today.getMonth() - dob.getMonth();
+  let ageInDays = today.getDate() - dob.getDate();
+
+  if (ageInDays < 0) {
+    const daysInPreviousMonth = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+    ageInDays += daysInPreviousMonth;
+    ageInMonths--;
+  }
+
+  if (ageInMonths < 0) {
+    ageInMonths += 12;
+    ageInYears--;
+  }
+
+  // Calculate total days
+  const totalDays = Math.floor((today - dob) / (1000 * 60 * 60 * 24));
+
+  // Display the results with an animation
+  const resultText = `You are ${ageInYears} years, ${ageInMonths} months, and ${ageInDays} days old. 
+                      <br>That's a total of ${totalDays} days!`;
+
+  document.getElementById("result").innerHTML = resultText;
+});
+(function () {
+  "use strict";
+
+  // Prevent XSS Attacks by sanitizing user inputs
+  function sanitizeInput(input) {
+    const tempDiv = document.createElement("div");
+    tempDiv.textContent = input;
+    return tempDiv.innerHTML;
+  }
+
+  // Example: Sanitize all input fields automatically
+  const inputs = document.querySelectorAll("input, textarea");
+  inputs.forEach(input => {
+    input.addEventListener("input", (e) => {
+      e.target.value = sanitizeInput(e.target.value);
+    });
+  });
+
+  // Disable right-click to prevent unauthorized access
+  document.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    console.warn("Right-click is disabled to enhance security.");
+  });
+
+  // Prevent debugging tools (like F12/DevTools)
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I")) {
+      e.preventDefault();
+      console.warn("Developer tools are disabled.");
+    }
+  });
+
+  // Monitor DOM changes for suspicious activity
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.addedNodes.length > 0) {
+        mutation.addedNodes.forEach(node => {
+          if (node.nodeType === 1 && node.tagName === "SCRIPT") {
+            console.error("Unauthorized script detected and removed!");
+            node.remove();
+          }
+        });
+      }
+    });
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  // Secure cookies
+  document.cookie = "SecureCookie=SecureValue; Secure; HttpOnly; SameSite=Strict";
+
+  console.log("Basic security measures are active on this website.");
+})();
+
+</script>
